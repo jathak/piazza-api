@@ -194,7 +194,7 @@ class Network(object):
             cid = post
         return self._rpc.content_bookmark(cid)
             
-    def unfollow_post(self, cid):
+    def unfollow_post(self, post):
         """Unfollows a post.
 
         :type  post: dict|str|int
@@ -203,11 +203,26 @@ class Network(object):
         :rtype: dict
         :returns: Dictionary with response from server
         """
-        resp = self._rpc.content_unbookmark(cid)
-        try:
-            return resp["result"] == "OK"
-        except KeyError:
-            return False
+        if type(post) is dict and "id" in post:
+            cid = post["id"]
+        else:
+            cid = post
+        return self._rpc.content_unbookmark(cid)
+    
+    def mark_post_as_unread(self, post):
+        """Unfollows a post.
+
+        :type  post: dict|str|int
+        :param post: Either the post dict returned by another API method, or
+            the `cid` field of that post.
+        :rtype: dict
+        :returns: Dictionary with response from server
+        """
+        if type(post) is dict and "id" in post:
+            cid = post["id"]
+        else:
+            cid = post
+        return self._rpc.content_mark_unread(cid)
         
     #########
     # Users #

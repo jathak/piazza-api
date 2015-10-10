@@ -132,6 +132,23 @@ class PiazzaRPC(object):
         )
         return self._handle_error(r, "Could not unfollow post {}.".format(cid))
             
+    def content_mark_unread(self, cid, nid=None):
+        """Mark post `cid` in network `nid` as unread
+
+        :type  nid: str
+        :param nid: This is the ID of the network (or class) from which
+            to query posts. This is optional and only to override the existing
+            `network_id` entered when created the class
+        :type  cid: str|int
+        :param cid: This is the post ID to mark as unread
+        :returns: Python object containing returned data
+        """
+        r = self.request(
+            method="content.mark_unread",
+            data={"cid": cid},
+            nid=nid
+        )
+        return self._handle_error(r, "Could not mark post as unread {}.".format(cid))
 
     def content_create(self, params):
         """Create a post or followup.
