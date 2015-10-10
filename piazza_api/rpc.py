@@ -29,6 +29,7 @@ class PiazzaRPC(object):
             "main": "https://piazza.com/main/api",
         }
         self.cookies = None
+        self.user_status = None
 
     def user_login(self, email=None, password=None):
         """Login with email, password and get back a session cookie
@@ -364,10 +365,14 @@ class PiazzaRPC(object):
         r = self.request(method="user_profile.get_profile")
         return self._handle_error(r, "Could not get user profile.")
         
-    def get_user_status(self):
+    def get_user_status(self, force=False):
         """Get status of the current user"""
+        if self.user_status and not force:
+            return self.user_status
         r = self.request(method="user.status")
-        return self._handle_error(r, "Could not get user status.")
+        result = self._handle_error(r, "Could not get user status.")
+        self.user_status = result
+        return result
 
     def request(self, method, data=None, nid=None, nid_key='nid',
                 api_type="logic", return_response=False):
