@@ -105,7 +105,7 @@ class Network(object):
         for cid in cids:
             yield self.get_post(cid)
 
-    def create_followup(self, post, content, anonymous=False):
+    def create_followup(self, post, content, anonymous='no'):
         """Create a follow-up on a post `post`.
 
         It seems like if the post has `<p>` tags, then it's treated as HTML,
@@ -122,9 +122,9 @@ class Network(object):
         :rtype: dict
         :returns: Dictionary with information about the created follow-up.
         """
-        try:
+        if type(post) is dict and "id" in post:
             cid = post["id"]
-        except KeyError:
+        else:
             cid = post
 
         params = {
@@ -135,25 +135,71 @@ class Network(object):
             "subject": content,
             "content": "",
 
-            "anonymous": "yes" if anonymous else "no",
+            "anonymous": anonymous,
         }
         return self._rpc.content_create(params)
         
-    def follow_post(self, cid):
+    def reply_to_followup(self, post, content, anonymous='no'):
+        """Replies to a follow-up.
+        
+        :type  post: dict|str|int
+        :param post: Either the post dict returned by another API method, or
+            the `cid` field of that post.
+        :type  subject: str
+        :param content: The content of the followup.
+        :type  anonymous: bool
+        :param anonymous: Whether or not to post anonymously.
+        :rtype: dict
+        :returns: Dictionary with information about the created reply.
+        """
+        if type(post) is dict and "id" in post:
+            cid = post["id"]
+        else:
+            cid = post
+        
+        params = {
+            "cid": cid,
+            "type": "feedback",
+            "subject": content,
+            "anonymous": anonymous
+        }
+        return self._rpc.content_create(params)
+        
+    def allows_anonymous_to_everyone(self):
+        """Determines whether posting anonymous to everyone is allowed for this course.
+        :returns True if anonymous to everyone is allowed; False otherwise
+        """
+        data = self._rpc.get_user_status()
+        network = None
+        for net in data['networks']:
+            if net['id'] == self._nid:
+                network = net
+                break
+        if network is None:
+            return False
+        return network['anonymity'] == 'full'
+        
+    def follow_post(self, post):
         """Follows a post.
 
-        :type  cid: str|int
-        :param cid: This is the post ID to follow
+        :type  post: dict|str|int
+        :param post: Either the post dict returned by another API method, or
+            the `cid` field of that post.
         :rtype: dict
         :returns: Dictionary with response from server
         """
+        if type(post) is dict and "id" in post:
+            cid = post["id"]
+        else:
+            cid = post
         return self._rpc.content_bookmark(cid)
             
     def unfollow_post(self, cid):
         """Unfollows a post.
 
-        :type  cid: str|int
-        :param cid: This is the post ID to unfollow
+        :type  post: dict|str|int
+        :param post: Either the post dict returned by another API method, or
+            the `cid` field of that post.
         :rtype: dict
         :returns: Dictionary with response from server
         """

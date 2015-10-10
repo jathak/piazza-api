@@ -346,6 +346,11 @@ class PiazzaRPC(object):
         """Get profile of the current user"""
         r = self.request(method="user_profile.get_profile")
         return self._handle_error(r, "Could not get user profile.")
+        
+    def get_user_status(self):
+        """Get status of the current user"""
+        r = self.request(method="user.status")
+        return self._handle_error(r, "Could not get user status.")
 
     def request(self, method, data=None, nid=None, nid_key='nid',
                 api_type="logic", return_response=False):
