@@ -138,7 +138,31 @@ class Network(object):
             "anonymous": "yes" if anonymous else "no",
         }
         return self._rpc.content_create(params)
+        
+    def follow_post(self, cid):
+        """Follows a post.
 
+        :type  cid: str|int
+        :param cid: This is the post ID to follow
+        :rtype: dict
+        :returns: Dictionary with response from server
+        """
+        return self._rpc.content_bookmark(cid)
+            
+    def unfollow_post(self, cid):
+        """Unfollows a post.
+
+        :type  cid: str|int
+        :param cid: This is the post ID to unfollow
+        :rtype: dict
+        :returns: Dictionary with response from server
+        """
+        resp = self._rpc.content_unbookmark(cid)
+        try:
+            return resp["result"] == "OK"
+        except KeyError:
+            return False
+        
     #########
     # Users #
     #########

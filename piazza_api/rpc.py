@@ -95,6 +95,43 @@ class PiazzaRPC(object):
             nid=nid
         )
         return self._handle_error(r, "Could not get post {}.".format(cid))
+        
+    def content_bookmark(self, cid, nid=None):
+        """Bookmark (follow) post `cid` in network `nid`
+
+        :type  nid: str
+        :param nid: This is the ID of the network (or class) from which
+            to query posts. This is optional and only to override the existing
+            `network_id` entered when created the class
+        :type  cid: str|int
+        :param cid: This is the post ID to bookmark
+        :returns: Python object containing returned data
+        """
+        r = self.request(
+            method="content.bookmark",
+            data={"cid": cid},
+            nid=nid
+        )
+        return self._handle_error(r, "Could not follow post {}.".format(cid))
+        
+    def content_unbookmark(self, cid, nid=None):
+        """Unbookmark (unfollow) post `cid` in network `nid`
+
+        :type  nid: str
+        :param nid: This is the ID of the network (or class) from which
+            to query posts. This is optional and only to override the existing
+            `network_id` entered when created the class
+        :type  cid: str|int
+        :param cid: This is the post ID to unbookmark
+        :returns: Python object containing returned data
+        """
+        r = self.request(
+            method="content.unbookmark",
+            data={"cid": cid},
+            nid=nid
+        )
+        return self._handle_error(r, "Could not unfollow post {}.".format(cid))
+            
 
     def content_create(self, params):
         """Create a post or followup.
